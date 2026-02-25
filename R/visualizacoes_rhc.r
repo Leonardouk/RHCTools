@@ -3,12 +3,18 @@
 
 plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
                              fill_labels, fill_name, x_label, y_label,
-                             x_breaks = 5, y_breaks  = 5000) {
+                             x_breaks = 5, y_breaks  = 5000,
+                             scale_fill_type = "manual", pallete = NULL) {
   p <- reactive_df %>%
     count(.data[[x_var]], .data[[fill_var]]) %>%
     ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]))) +
     geom_bar(stat = "identity", position = "stack") +
-    scale_fill_manual(values = fill_values, labels = fill_labels, name = fill_name) +
+    if (scale_fill_type == "manual") {
+      scale_fill_manual(values = fill_values, labels = fill_labels, name = fill_name)
+    } +
+    if (scale_fill_type == "discrete") {
+      scale_fill_discrete(name = fill_name, pallete = pallete)
+    } +
     labs(x = x_label, y = y_label) +
     scale_x_continuous(breaks = breaks_width(x_breaks)) +
     scale_y_continuous(breaks = breaks_width(y_breaks))
@@ -31,7 +37,8 @@ plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_nam
 }
 
 
-plot_percentage_bar <- function(rea) {
+plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label,
+                                y_label) {
   p <- reactive_df %>%
     count(.data[[x_var]], .data[[fill_var]]) %>%
     mutate(percentage = n / sum(n)) %>%
@@ -39,7 +46,7 @@ plot_percentage_bar <- function(rea) {
     geom_bar(stat = "identity", position = "stack") +
     scale_y_continuous(labels= scales::percent) +
     scale_fill_viridis_d(option = "D", name = fill_name)
-    labs(x = x_label, y = y_label) +
+    labs(x = x_label, y = y_label)
   
   ggplotly(p)
 }
