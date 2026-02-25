@@ -17,6 +17,20 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
 }
 
 
+plot_percentage_stacked_bar <- function(reactive_df, x_var, fill_var, fill_name
+                                        x_label, y_label, x_breaks) {
+  reactive_df %>%
+    count(.data[[x_var]], .data[[fill_var]]) %>%
+    ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]))) +
+    geom_bar(stat = "identity", position = "fill") +
+    scale_fill_discrete(
+      name = fill_name
+    ) +
+    labs(x = x_label, y = y_label) +
+    scale_x_continuous(breaks = breaks_width(x_breaks))
+}
+
+
 plot_percentage_bar <- function(rea) {
   p <- reactive_df %>%
     count(.data[[x_var]], .data[[fill_var]]) %>%
