@@ -9,15 +9,14 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
     count(.data[[x_var]], .data[[fill_var]]) %>%
     ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]))) +
     geom_bar(stat = "identity", position = "stack") +
-    if (scale_fill_type == "manual") {
-      scale_fill_manual(values = fill_values, labels = fill_labels, name = fill_name)
-    } +
-    if (scale_fill_type == "discrete") {
-      scale_fill_discrete(name = fill_name, pallete = pallete)
-    } +
     labs(x = x_label, y = y_label) +
     scale_x_continuous(breaks = breaks_width(x_breaks)) +
     scale_y_continuous(breaks = breaks_width(y_breaks))
+  if (scale_fill_type == "manual") {
+    p <-  p + scale_fill_manual(values = fill_values, labels = fill_labels, name = fill_name)
+  } else if (scale_fill_type == "discrete") {
+    p <- p + scale_fill_discrete(name = fill_name)
+  }
   
   ggplotly(p)
 }
