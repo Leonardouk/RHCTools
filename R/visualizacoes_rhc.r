@@ -2,18 +2,27 @@
 # utilizadas na criação de visualizações (plots) do Dashboard RHC.
 
 plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
-                             fill_labels, fill_name, x_label, y_label,
+                             fill_labels = NULL, fill_name, x_label, y_label,
                              x_breaks = 5, y_breaks  = 5000,
                              scale_fill_type = "manual", pallete = NULL) {
-  p <- reactive_df %>%
-    count(.data[[x_var]], .data[[fill_var]]) %>%
+  count_df <- reactive_df %>% 
+    count(.data[[x_var]], .data[[fill_var]])
+  
+  if (!is.null(fill_labels)) {
+    names(fill_values) <- fill_labels
+    count_df <- count_df %>% mutate(
+      !!fill_var := factor(.data[[fill_var]], levels = names(fill_labels), labels = fill_labels),
+    )
+  }
+  
+  p <- count_df %>%
     ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]))) +
     geom_bar(stat = "identity", position = "stack") +
     labs(x = x_label, y = y_label) +
     scale_x_continuous(breaks = breaks_width(x_breaks)) +
     scale_y_continuous(breaks = breaks_width(y_breaks))
   if (scale_fill_type == "manual") {
-    p <-  p + scale_fill_manual(values = fill_values, labels = fill_labels, name = fill_name)
+    p <-  p + scale_fill_manual(values = fill_values, name = fill_name)
   } else if (scale_fill_type == "discrete") {
     p <- p + scale_fill_discrete(name = fill_name)
   }
