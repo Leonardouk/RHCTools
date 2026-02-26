@@ -61,19 +61,20 @@ plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label
 
 
 plot_treemap <- function(reactive_df, x_var, gradient_colours, fill_name,
-                         group_threshold = 0) {
-  p <- reactive_df %>%
+                         group_threshold = FALSE) {
+  count_df <- reactive_df %>%
     count(.data[[x_var]]) %>%
-    
-    if (group_threshold) {
-      reactive_df <- mutate(
-        percentage = n / sum(n) * 100,
-        x_var_grouped = ifelse(percentage < 1, "Outros (< 1%)", .data[[x_var]])
-      ) %>%
-        group_by(x_var_grouped) %>% summarise(n = sum(n)) %>% ungroup()
-      x_var <- "x_var_grouped"
-    }
-    
+    mutate(percentage = n / sum(n) * 100)
+  
+  if (group_threshold) {
+    count_df <- mutate(
+      x_var_grouped = ifelse(percentage < 1, "Outros (< 1%)", .data[[x_var]])
+    ) %>%
+      group_by(x_var_grouped) %>% summarise(n = sum(n), percentage = sum(percentage)) %>% ungroup()
+    x_var <- "x_var_grouped"
+  }
+  
+  p <- count_df %>%
     mutate(
       pct_label = paste0(round(percentage, 1), "%"),
       x_var_wrapped = str_wrap(.data[[x_var]], width = 10)
