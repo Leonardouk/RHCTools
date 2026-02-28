@@ -60,36 +60,37 @@ plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label
 }
 
 
-plot_treemap <- function(reactive_df, x_var, gradient_colours, fill_name,
+plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
                          group_threshold = FALSE) {
   count_df <- reactive_df %>%
     count(.data[[x_var]]) %>%
     mutate(percentage = n / sum(n) * 100)
   
   if (group_threshold) {
-    count_df <- mutate(
-      x_var_grouped = ifelse(percentage < 1, "Outros (< 1%)", .data[[x_var]])
-    ) %>%
+    count_df <- count_df %>%
+      mutate(
+        x_var_grouped = ifelse(percentage < 1, "Outros (< 1%)", .data[[x_var]])
+      ) %>%
       group_by(x_var_grouped) %>% summarise(n = sum(n), percentage = sum(percentage)) %>% ungroup()
     x_var <- "x_var_grouped"
   }
   
+  seq_gradient <- seq(from = 0, to = 1, length.out = length(gradient_colors))
+  formatted_gradient_colors <- Map(c, seq_gradient, gradient_colors)
+  
   p <- count_df %>%
-    mutate(
-      pct_label = paste0(round(percentage, 1), "%"),
-      x_var_wrapped = str_wrap(.data[[x_var]], width = 10)
-    ) %>%
-    ggplot(aes(area = n, fill = n)) +
-    scale_fill_gradientn(colours = gradient_colours,
-                         name = fill_name) +
-    geom_treemap() +
-    geom_treemap_text(aes(label = x_var_wrapped), fontface = "italic", 
-                      colour = "white",place = "topleft", grow = TRUE,
-                      reflow = TRUE, alpha = 0.65) +
-    geom_treemap_text(aes(label = pct_label), fontface = "bold",
-                      colour = "white", place = "bottomright", min.size = 8)
-    
-  ggplotly(p)
+    plot_ly(
+      type = "treemap",
+      labels = ~.data[[x_var]],
+      parents = "",
+      values = ~n,
+      textinfo = "label+percent parent",
+      textfont = list(size = 35, color = "white", fontface = "bold"),
+      marker = list(colors = ~n, colorscale = formatted_gradient_colors),
+      pathbar = "visible"
+    )
+  
+  return(p)
 }
 
 
@@ -97,9 +98,9 @@ plot_map <- function(reactive_df, map_data, pallete, fill_var,
                      interactive_click = 0, label, legend_title) {
   leaflet(map_data) %>%
     addPolygons(
-      fillColour = ~pallete(fill_var),
+      fillcolor = ~pallete(fill_var),
       fillOpacity = .7,
-      colour = "white",
+      color = "white",
       weight = 1,
       label = label,
       if (interactive_click) {
@@ -121,7 +122,7 @@ plot_pizza <- function(reactive_df, y_var, fill_var) {
   p <- reactive_df %>%
     count(.data[[y_var]]) %>%
     ggplot(aes(x = "", y = n,  fill = fill_var)) +
-    geom_bar(stat = "identity", width = 1, colour = "white") +
+    geom_bar(stat = "identity", width = 1, color = "white") +
     coord_polar("y", start = 0) +
     theme_void()
 }
