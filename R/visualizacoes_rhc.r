@@ -65,19 +65,20 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
   count_df <- reactive_df %>%
     count(.data[[x_var]]) %>%
     mutate(percentage = n / sum(n) * 100)
-  
+
   if (group_threshold) {
     count_df <- count_df %>%
       mutate(
         x_var_grouped = ifelse(percentage < 1, "Outros (< 1%)", .data[[x_var]])
       ) %>%
       group_by(x_var_grouped) %>% summarise(n = sum(n), percentage = sum(percentage)) %>% ungroup()
+    
     x_var <- "x_var_grouped"
   }
   
   seq_gradient <- seq(from = 0, to = 1, length.out = length(gradient_colors))
   formatted_gradient_colors <- Map(c, seq_gradient, gradient_colors)
-  
+
   p <- count_df %>%
     plot_ly(
       type = "treemap",
