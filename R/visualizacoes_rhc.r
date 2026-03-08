@@ -130,11 +130,23 @@ plot_map <- function(reactive_df, pallete, fill_var,
 }
 
 
-plot_pizza <- function(reactive_df, y_var, fill_var) {
-  p <- reactive_df %>%
-    count(.data[[y_var]]) %>%
-    ggplot(aes(x = "", y = n,  fill = fill_var)) +
-    geom_bar(stat = "identity", width = 1, color = "white") +
-    coord_polar("y", start = 0) +
-    theme_void()
+plot_pizza <- function(reactive_df, x_var, colors, title) {
+  count_df <- reactive_df %>%
+    count(.data[[x_var]])
+  
+  p <- count_df  %>%
+    plot_ly(labels = ~.data[[x_var]], values = ~n, type = "pie",
+            textposition = 'inside',
+            textinfo = 'label+percent',
+            insidetextfont = list(color = '#FFFFFF'),
+            hoverinfo = 'text',
+            text = ~paste(n, ' casos'),
+            marker = list(colors = colors,
+                          line = list(color = '#FFFFFF', width = 1)),
+            showlegend = FALSE) %>%
+    layout(title = title, 
+           xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+           yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+  return(p)
 }
