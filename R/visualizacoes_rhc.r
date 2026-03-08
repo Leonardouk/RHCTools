@@ -1,6 +1,7 @@
 # Este arquivo tem como objetivo concentrar e organizar todas as funções 
 # utilizadas na criação de visualizações (plots) do Dashboard RHC.
 
+
 plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
                              fill_labels = NULL, fill_name, x_label, y_label,
                              x_breaks = 5, y_breaks  = 5000,
@@ -95,26 +96,36 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
 }
 
 
-plot_map <- function(reactive_df, map_data, pallete, fill_var,
-                     interactive_click = 0, label, legend_title) {
-  leaflet(map_data) %>%
+plot_map <- function(reactive_df, pallete, fill_var,
+                     id_click = NULL, label, legend_title) {
+  current_env <- rlang::current_env()
+  fill_color <- rlang::new_formula(
+    lhs = NULL,
+    rhs = rlang::expr(pallete(!!rlang::sym(fill_var))),
+    env = current_env
+  )
+  fill_var <- as.formula(paste0("~", fill_var))
+  if (!is.null(id_click)) {
+    id_click <- as.formula(paste0("~", id_click))
+    print(paste("layer_id criado:", deparse(id_click)))
+  }
+  
+  leaflet(reactive_df) %>%
     addPolygons(
-      fillcolor = ~pallete(fill_var),
+      fillColor = fill_color,
       fillOpacity = .7,
       color = "white",
       weight = 1,
       label = label,
-      if (interactive_click) {
-        layer_id = ~id_click
-      }
+      layerId = id_click
     ) %>%
-    addLegend(pal = pallete, values = ~fill_var, title = legend_title, 
+    addLegend(pal = pallete, values = fill_var, title = legend_title, 
               position = "bottomright") %>%
     fitBounds(
-      lng1 = st_bbox(map_data)[["xmin"]],
-      lat1 = st_bbox(map_data)[["ymin"]],
-      lng2 = st_bbox(map_data)[["xmax"]],
-      lat2 = st_bbox(map_data)[["ymax"]]
+      lng1 = st_bbox(reactive_df)[["xmin"]],
+      lat1 = st_bbox(reactive_df)[["ymin"]],
+      lng2 = st_bbox(reactive_df)[["xmax"]],
+      lat2 = st_bbox(reactive_df)[["ymax"]]
     )
 }
 
