@@ -5,7 +5,8 @@
 plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
                              fill_labels = NULL, fill_name, x_label, y_label,
                              x_breaks = 5, y_breaks  = 5000,
-                             scale_fill_type = "manual", pallete = NULL) {
+                             scale_fill_type = "manual", pallete = NULL,
+                             hover_x, hover_y) {
   count_df <- reactive_df %>% 
     count(.data[[x_var]], .data[[fill_var]])
   
@@ -17,7 +18,15 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
   }
   
   p <- count_df %>%
-    ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]))) +
+    mutate(
+        hover_label = paste0(
+        hover_x, ": ", .data[[x_var]], "<br>",
+        "Quantidade de Casos: ", n, "<br>",
+        hover_y, ": ", .data[[fill_var]]
+      )
+    ) %>%
+    ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]),
+               text = hover_label)) +
     geom_bar(stat = "identity", position = "stack") +
     labs(x = x_label, y = y_label) +
     scale_x_continuous(breaks = breaks_width(x_breaks)) +
@@ -28,36 +37,55 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
     p <- p + scale_fill_discrete(name = fill_name)
   }
   
-  ggplotly(p)
+  ggplotly(p, tooltip = "text")
 }
 
 
 plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_name,
-                                        x_label, y_label, x_breaks) {
-  reactive_df %>%
+                                        x_label, y_label, x_breaks, hover_x,
+                                        hover_y) {
+  p <- reactive_df %>%
     count(.data[[x_var]], .data[[fill_var]]) %>%
-    ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]))) +
+    mutate(
+      hover_label = paste0(
+        hover_x, ": ", .data[[x_var]], "<br>",
+        "Quantidade de Casos: ", n, "<br>",
+        hover_y, ": ", .data[[fill_var]]
+      )
+    ) %>%
+    ggplot(aes(x = .data[[x_var]], y = n, fill = as.factor(.data[[fill_var]]),
+               text = hover_label)) +
     geom_bar(stat = "identity", position = "fill") +
     scale_fill_discrete(
       name = fill_name
     ) +
     labs(x = x_label, y = y_label) +
     scale_x_continuous(breaks = breaks_width(x_breaks))
+  
+  ggplotly(p, tooltip = "text")
 }
 
 
 plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label,
-                                y_label) {
+                                y_label, hover_x, hover_y) {
   p <- reactive_df %>%
     count(.data[[x_var]], .data[[fill_var]]) %>%
-    mutate(percentage = n / sum(n)) %>%
-    ggplot(aes(x = .data[[x_var]], y = percentage, fill = as.factor(.data[[fill_var]]))) +
+    mutate(
+      percentage = n / sum(n),
+      hover_label = paste0(
+        hover_x, ": ", .data[[x_var]], "<br>",
+        "Quantidade de Casos: ", n, "<br>",
+        hover_y, ": ", .data[[fill_var]]
+      )
+    ) %>%
+    ggplot(aes(x = .data[[x_var]], y = percentage, fill = as.factor(.data[[fill_var]]),
+               text = hover_label)) +
     geom_bar(stat = "identity", position = "stack") +
     scale_y_continuous(labels= scales::percent) +
     scale_fill_viridis_d(option = "D", name = fill_name)
     labs(x = x_label, y = y_label)
   
-  ggplotly(p)
+  ggplotly(p, tooltip = "text")
 }
 
 
@@ -89,7 +117,11 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
       textinfo = "label+percent parent",
       textfont = list(size = 35, color = "white", fontface = "bold"),
       marker = list(colors = ~n, colorscale = formatted_gradient_colors),
-      pathbar = "visible"
+      pathbar = "visible",
+      hovertemplate = paste0(
+        fill_name, ": %{value}",
+        "<extra></extra>"
+      )
     )
   
   return(p)
@@ -107,7 +139,6 @@ plot_map <- function(reactive_df, pallete, fill_var,
   fill_var <- as.formula(paste0("~", fill_var))
   if (!is.null(id_click)) {
     id_click <- as.formula(paste0("~", id_click))
-    print(paste("layer_id criado:", deparse(id_click)))
   }
   
   leaflet(reactive_df) %>%
@@ -130,7 +161,7 @@ plot_map <- function(reactive_df, pallete, fill_var,
 }
 
 
-plot_pizza <- function(reactive_df, x_var, colors, title) {
+plot_pizza <- function(reactive_df, x_var, colors, title, hover_x) {
   count_df <- reactive_df %>%
     count(.data[[x_var]])
   
@@ -139,11 +170,14 @@ plot_pizza <- function(reactive_df, x_var, colors, title) {
             textposition = 'inside',
             textinfo = 'label+percent',
             insidetextfont = list(color = '#FFFFFF'),
-            hoverinfo = 'text',
             text = ~paste(n, ' casos'),
             marker = list(colors = colors,
                           line = list(color = '#FFFFFF', width = 1)),
-            showlegend = FALSE) %>%
+            showlegend = FALSE,
+            hovertemplate = paste0(
+              hover_x, ": %{value}",
+              "<extra></extra>"
+            )) %>%
     layout(title = title, 
            xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
            yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
