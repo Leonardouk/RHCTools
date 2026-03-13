@@ -2,3 +2,4 @@ Package: RHCTools
 Type: Package
 Title: "Pacote de funcoes pensadas para a criacao de dashboards interativos do Registro Hospitalar de Cancer do estado de São Paulo."
 Version: 0.2.7
+Remotes: github::Leonardouk/IC_dashboard_RHC@main/projects/funcoes_rhc
