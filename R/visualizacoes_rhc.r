@@ -2,6 +2,7 @@
 # utilizadas na criação de visualizações (plots) do Dashboard RHC.
 
 
+#' @export
 plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
                              fill_labels = NULL, fill_name, x_label, y_label,
                              x_breaks = 5, y_breaks  = 5000,
@@ -41,6 +42,7 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
 }
 
 
+#' @export
 plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_name,
                                         x_label, y_label, x_breaks, hover_x,
                                         hover_y) {
@@ -66,6 +68,7 @@ plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_nam
 }
 
 
+#' @export
 plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label,
                                 y_label, hover_x, hover_y) {
   p <- reactive_df %>%
@@ -89,6 +92,7 @@ plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label
 }
 
 
+#' @export
 plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
                          group_threshold = FALSE) {
   count_df <- reactive_df %>%
@@ -128,6 +132,7 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
 }
 
 
+#' @export
 plot_map <- function(reactive_df, pallete, fill_var,
                      id_click = NULL, label, legend_title) {
   current_env <- rlang::current_env()
@@ -161,6 +166,7 @@ plot_map <- function(reactive_df, pallete, fill_var,
 }
 
 
+#' @export
 plot_pizza <- function(reactive_df, x_var, colors, title, hover_x) {
   count_df <- reactive_df %>%
     count(.data[[x_var]])
