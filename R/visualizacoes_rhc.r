@@ -345,7 +345,7 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
 #'   label = ~paste0("RRAS: ", RRAS, " | Casos: ", num_cases),
 #'   legend_title = "RRAS"
 #' )
-plot_map <- function(reactive_df, pallete, fill_var,
+plot_map <- function(reactive_df, pallete, fill_var, group = NULL,
                      id_click = NULL, label, legend_title) {
   current_env <- rlang::current_env()
   fill_color <- rlang::new_formula(
@@ -354,12 +354,14 @@ plot_map <- function(reactive_df, pallete, fill_var,
     env = current_env
   )
   fill_var <- as.formula(paste0("~", fill_var))
+  
   if (!is.null(id_click)) {
     id_click <- as.formula(paste0("~", id_click))
   }
-  
+
   leaflet(reactive_df) %>%
     addPolygons(
+      group = group,
       fillColor = fill_color,
       fillOpacity = .7,
       color = "white",
