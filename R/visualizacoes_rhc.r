@@ -271,7 +271,7 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
   count_df <- reactive_df %>%
     count(.data[[x_var]]) %>%
     mutate(percentage = n / sum(n) * 100)
-
+  
   if (group_threshold) {
     count_df <- count_df %>%
       mutate(
@@ -291,7 +291,7 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
       labels = ~.data[[x_var]],
       parents = "",
       values = ~n,
-      textinfo = "label+percent parent",
+      textinfo = "label+percent entry",
       textfont = list(size = 35, color = "white", fontface = "bold"),
       marker = list(colors = ~n, colorscale = formatted_gradient_colors),
       pathbar = "visible",
