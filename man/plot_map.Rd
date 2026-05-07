@@ -4,7 +4,15 @@
 \alias{plot_map}
 \title{Plot de um gráfico de mapa para valores categóricos}
 \usage{
-plot_map(reactive_df, pallete, fill_var, id_click = NULL, label, legend_title)
+plot_map(
+  reactive_df,
+  pallete,
+  fill_var,
+  group = NULL,
+  id_click = NULL,
+  label,
+  legend_title
+)
 }
 \arguments{
 \item{reactive_df}{Um Dataframe que foi previamente manipulado para interagir
