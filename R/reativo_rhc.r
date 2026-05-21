@@ -41,10 +41,29 @@ sidebar_filter <- function(df, input, output, input_vector, card_title_vector) {
   
   count <- 1
   for (item in card_title_vector) {
-    card_out_str <- paste0("card_title", count)
-    output[[card_out_str]] <- renderText(make_card_title(item, filter_vector))
+    local({
+      local_count <- count
+      local_item <- item
+      
+      card_out_str <- paste0("card_title", local_count)
+      title_text <- make_card_title(local_item, filter_vector)
+      
+      output[[card_out_str]] <- renderText(title_text)
+    })
+    
     count <- count + 1
   }
   
   return(output)
 }
+
+
+
+
+
+
+
+
+
+
+
