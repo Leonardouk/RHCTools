@@ -282,6 +282,9 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
     x_var <- "x_var_grouped"
   }
   
+  count_df <- count_df %>%
+    mutate(custom_text = sprintf("%.1f%%", percentage))
+  
   seq_gradient <- seq(from = 0, to = 1, length.out = length(gradient_colors))
   formatted_gradient_colors <- Map(c, seq_gradient, gradient_colors)
 
@@ -291,7 +294,8 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
       labels = ~.data[[x_var]],
       parents = "",
       values = ~n,
-      textinfo = "label+percent entry",
+      text = ~custom_text,
+      textinfo = "label+text",
       textfont = list(size = 35, color = "white", fontface = "bold"),
       marker = list(colors = ~n, colorscale = formatted_gradient_colors),
       pathbar = "visible",
