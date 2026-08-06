@@ -298,7 +298,8 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
       hovertemplate = paste0(
         fill_name, ": %{value}",
         "<extra></extra>"
-      )
+      ),
+      branchvalues = "total"
     )
   
   return(p)
