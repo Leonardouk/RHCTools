@@ -16,9 +16,9 @@
 #' de seus argumentos, mas é possível passar argumentos que foram previamente
 #' manipulados para que estes se encaixem no contexto de uso de sua necessidade.
 #' 
-#' @param reactive_df Um Dataframe que foi previamente manipulado para interagir
-#' com filtragem de dados dinâmica.
-#' @param x_var Uma String que consiste do nome de uma coluna de reactive_df, 
+#' @param df Um Dataframe que foi previamente formatado para estar de acordo com as
+#' necessidades de filtragem de dados dinâmica.
+#' @param x_var Uma String que consiste do nome de uma coluna de df, 
 #' seja ela natural dele ou criada por manipulação posterior.Este argumento 
 #' define a variável de eixo X do plot.
 #' @param fill_var Uma string que compartilha das características de x_var. Este
@@ -28,7 +28,7 @@
 #' @param fill_labels Um mapa que relaciona um valor categórico com uma String,
 #' a qual nomeia e se apresenta no plot.
 #' @param fill_name Uma String que define o nome da legenda das categorias do plot.
-#' @param x_label,y_label Strings que definem os nomes de eixo x e y do plot.
+#' @param x_label, y_label Strings que definem os nomes de eixo x e y do plot.
 #' @param x_breaks,y_breaks Valores númericos que definem o intervalo númerico
 #' da descrição dos valores dos eixos x e y.
 #' @param scale_fill_type Uma String que descreve o tipo de preenchimento de cor
@@ -44,7 +44,7 @@
 #' 
 #' @examples
 #' plot_stacked_bar(
-#'   reactive_df = df,
+#'   df = df,
 #'   x_var = "ANODIAG",
 #'   fill_var = "CATEATEND",
 #'   fill_values = c("1" = "yellow", "2" = "lightblue", "3" = "lightgreen", 
@@ -57,12 +57,12 @@
 #'   hover_x = "Ano de Diagnóstico",
 #'   hover_y = "Categoria de Atendimento"
 #' )
-plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
+plot_stacked_bar <- function(df, x_var, fill_var, fill_values,
                              fill_labels = NULL, fill_name, x_label, y_label,
-                             x_breaks = 5, y_breaks  = 5000,
+                             x_breaks = 5, y_breaks = 5000,
                              scale_fill_type = "manual", pallete = NULL,
                              hover_x, hover_y) {
-  count_df <- reactive_df %>% 
+  count_df <- df %>% 
     count(.data[[x_var]], .data[[fill_var]])
   
   if (!is.null(fill_labels)) {
@@ -112,9 +112,9 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
 #' de seus argumentos, mas é possível passar argumentos que foram previamente
 #' manipulados para que estes se encaixem no contexto de uso de sua necessidade.
 #' 
-#' @param reactive_df Um Dataframe que foi previamente manipulado para interagir
-#' com filtragem de dados dinâmica.
-#' @param x_var Uma String que consiste do nome de uma coluna de reactive_df, 
+#' @param df Um Dataframe que foi previamente formatado para estar de acordo com as
+#' necessidades de filtragem de dados dinâmica.
+#' @param x_var Uma String que consiste do nome de uma coluna de df, 
 #' seja ela natural dele ou criada por manipulação posterior.Este argumento 
 #' define a variável de eixo X do plot.
 #' @param fill_var Uma string que compartilha das características de x_var. Este
@@ -130,7 +130,7 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
 #' 
 #' @examples
 #' plot_proportional_stacked_bar(
-#'   reactive_df = df,
+#'   df = df,
 #'   x_var = "ANODIAG",
 #'   fill_var = "CATEATEND",
 #'   fill_name = "Categorias de Atendimento",
@@ -140,10 +140,10 @@ plot_stacked_bar <- function(reactive_df, x_var, fill_var, fill_values,
 #'   hover_x = "Ano de Diagnóstico",
 #'   hover_y = "Categoria de Atendimento"
 #' )
-plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_name,
+plot_proportional_stacked_bar <- function(df, x_var, fill_var, fill_name,
                                         x_label, y_label, x_breaks, hover_x,
                                         hover_y) {
-  p <- reactive_df %>%
+  p <- df %>%
     count(.data[[x_var]], .data[[fill_var]]) %>%
     mutate(
       hover_label = paste0(
@@ -181,9 +181,9 @@ plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_nam
 #' de seus argumentos, mas é possível passar argumentos que foram previamente
 #' manipulados para que estes se encaixem no contexto de uso de sua necessidade.
 #' 
-#' @param reactive_df Um Dataframe que foi previamente manipulado para interagir
-#' com filtragem de dados dinâmica.
-#' @param x_var Uma String que consiste do nome de uma coluna de reactive_df, 
+#' @param df Um Dataframe que foi previamente formatado para estar de acordo com as
+#' necessidades de filtragem de dados dinâmica.
+#' @param x_var Uma String que consiste do nome de uma coluna de df, 
 #' seja ela natural dele ou criada por manipulação posterior.Este argumento 
 #' define a variável de eixo X do plot.
 #' @param fill_var Uma string que compartilha das características de x_var. Este
@@ -197,7 +197,7 @@ plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_nam
 #' 
 #' @examples
 #' plot_percentage_bar(
-#'   reactive_df = df,
+#'   df = df,
 #'   x_var = "ECGRUP",
 #'   fill_var = "EC",
 #'   fill_name = "Estadio Clínico",
@@ -206,9 +206,9 @@ plot_proportional_stacked_bar <- function(reactive_df, x_var, fill_var, fill_nam
 #'   hover_x = "Grupo de Estadiamento Clínico", 
 #'   hover_y = "Estadiamento Clínico"
 #' )
-plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label,
+plot_percentage_bar <- function(df, x_var, fill_var, fill_name, x_label,
                                 y_label, hover_x, hover_y) {
-  p <- reactive_df %>%
+  p <- df %>%
     count(.data[[x_var]], .data[[fill_var]]) %>%
     mutate(
       percentage = n / sum(n),
@@ -244,9 +244,9 @@ plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label
 #' de seus argumentos, mas é possível passar argumentos que foram previamente
 #' manipulados para que estes se encaixem no contexto de uso de sua necessidade.
 #' 
-#' @param reactive_df Um Dataframe que foi previamente manipulado para interagir
-#' com filtragem de dados dinâmica.
-#' @param x_var Uma String que consiste do nome de uma coluna de reactive_df, 
+#' @param df Um Dataframe que foi previamente formatado para estar de acordo com as
+#' necessidades de filtragem de dados dinâmica.
+#' @param x_var Uma String que consiste do nome de uma coluna de df, 
 #' seja ela natural dele ou criada por manipulação posterior.
 #' @param gradient_colors Um vetor de Strings que definem cores para formar um
 #' gradiente para o plot.
@@ -260,15 +260,15 @@ plot_percentage_bar <- function(reactive_df, x_var, fill_var, fill_name, x_label
 #' 
 #' @examples
 #' plot_treemap(
-#'   reactive_df = plot_df(),
+#'   df = plot_df(),
 #'   x_var = "DSCINST",
 #'   gradient_colors = c("#91e0ff", "#57c785","#005991"),
 #'   fill_name = "Qtd de Casos",
 #'   group_threshold = TRUE
 #' )
-plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
+plot_treemap <- function(df, x_var, gradient_colors, fill_name,
                          group_threshold = FALSE) {
-  count_df <- reactive_df %>%
+  count_df <- df %>%
     count(.data[[x_var]]) %>%
     mutate(percentage = n / sum(n) * 100)
   
@@ -324,33 +324,33 @@ plot_treemap <- function(reactive_df, x_var, gradient_colors, fill_name,
 #' de seus argumentos, mas é possível passar argumentos que foram previamente
 #' manipulados para que estes se encaixem no contexto de uso de sua necessidade.
 #' 
-#' @param reactive_df Um Dataframe que foi previamente manipulado para interagir
-#' com filtragem de dados dinâmica.
+#' @param df Um Dataframe que foi previamente formatado para estar de acordo com as
+#' necessidades de filtragem de dados dinâmica.
 #' @param pallete Um vetor de Strings que nomeiam cores ou uma String que
 #' nomeia uma paleta de cores pré-definida 
-#' @param fill_var Uma String que consiste do nome de uma coluna de reactive_df, 
+#' @param fill_var Uma String que consiste do nome de uma coluna de df, 
 #' seja ela natural dele ou criada por manipulação posterior.
-#' @param id_click Uma String que consiste do nome de uma coluna de reactive_df.
+#' @param id_click Uma String que consiste do nome de uma coluna de df.
 #' Ela é utilizada para observar se alguma informação relevante foi interagida
 #' pelo clique do mouse do usuário, guardando essa informação a partir de seu valor
 #' na coluna.
 #' @param label Uma String que define o texto que aparece para o usuário
 #' quando ele passa o mouse sobre uma uma informação relevante do mapa.
 #' @param legend_title Uma String que define o título da legenda das informações
-#' do mapa..
+#' do mapa.
 #' 
 #' @export
 #' 
 #' @examples
 #' plot_map(
-#'   reactive_df = map_df,
+#'   df = map_df,
 #'   pallete = pal,
 #'   fill_var = "RRAS",
 #'   id_click = "CD_MUN",
 #'   label = ~paste0("RRAS: ", RRAS, " | Casos: ", num_cases),
 #'   legend_title = "RRAS"
 #' )
-plot_map <- function(reactive_df, pallete, fill_var, group = NULL,
+plot_map <- function(df, pallete, fill_var, group = NULL,
                      id_click = NULL, label, legend_title) {
   current_env <- rlang::current_env()
   fill_color <- rlang::new_formula(
@@ -364,7 +364,7 @@ plot_map <- function(reactive_df, pallete, fill_var, group = NULL,
     id_click <- as.formula(paste0("~", id_click))
   }
 
-  leaflet(reactive_df) %>%
+  leaflet(df) %>%
     addPolygons(
       group = group,
       fillColor = fill_color,
@@ -377,10 +377,10 @@ plot_map <- function(reactive_df, pallete, fill_var, group = NULL,
     addLegend(pal = pallete, values = fill_var, title = legend_title, 
               position = "bottomright") %>%
     fitBounds(
-      lng1 = st_bbox(reactive_df)[["xmin"]],
-      lat1 = st_bbox(reactive_df)[["ymin"]],
-      lng2 = st_bbox(reactive_df)[["xmax"]],
-      lat2 = st_bbox(reactive_df)[["ymax"]]
+      lng1 = st_bbox(df)[["xmin"]],
+      lat1 = st_bbox(df)[["ymin"]],
+      lng2 = st_bbox(df)[["xmax"]],
+      lat2 = st_bbox(df)[["ymax"]]
     )
 }
 
@@ -399,9 +399,9 @@ plot_map <- function(reactive_df, pallete, fill_var, group = NULL,
 #' de seus argumentos, mas é possível passar argumentos que foram previamente
 #' manipulados para que estes se encaixem no contexto de uso de sua necessidade.
 #' 
-#' @param reactive_df Um Dataframe que foi previamente manipulado para interagir
-#' com filtragem de dados dinâmica. 
-#' @param x_var Uma String que consiste do nome de uma coluna de reactive_df, 
+#' @param df Um Dataframe que foi previamente formatado para estar de acordo com as
+#' cnecessidades defiltragem de dados dinâmica. 
+#' @param x_var Uma String que consiste do nome de uma coluna de df, 
 #' seja ela natural dele ou criada por manipulação posterior.
 #' @param colors Um vetor de Strings que nomeiam cores ou uma String que
 #' nomeia uma paleta de cores pré-definida
@@ -414,15 +414,15 @@ plot_map <- function(reactive_df, pallete, fill_var, group = NULL,
 #' @examples
 #' colors <- c("lightblue", "lightgreen")
 #' plot_pizza(
-#'   reactive_df = diagprev_df,
+#'   df = diagprev_df,
 #'   x_var = "DIAGPREV",
 #'   colors = colors,
 #'   title = "Quantidade de Casos Registrados por Diagnóstico Prévio",
 #'   hover_x = "Qtd de Casos"
 #' )
 #' @export
-plot_pizza <- function(reactive_df, x_var, colors, title, hover_x) {
-  count_df <- reactive_df %>%
+plot_pizza <- function(df, x_var, colors, title, hover_x) {
+  count_df <- df %>%
     count(.data[[x_var]])
   
   p <- count_df  %>%
